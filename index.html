@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>신비한 운세소</title>
+    <style>
+        /* 1. 전체 스타일 및 테마 */
+        :root {
+            --primary-color: #6a1b9a;
+            --accent-color: #ffd700;
+            --text-color: #ffffff;
+            --bg-color: #1a0033;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Ownglyph_ryurue-Rg', 'Nanum Myeongjo', serif; /* 손글씨 느낌 폰트 권장 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            background-image: radial-gradient(circle at 50% 50%, #2a0e4e 0%, #000000 100%);
+        }
+
+        /* 별똥별 배경 효과 */
+        .stars {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            background-image: 
+                radial-gradient(2px 2px at 20px 30px, #eee, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 40px 70px, #fff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 50px 160px, #ddd, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 90px 40px, #fff, rgba(0,0,0,0));
+            background-repeat: repeat;
+            background-size: 200px 200px;
+            opacity: 0.3;
+        }
+
+        /* 2. 메인 컨테이너 */
+        .container {
+            text-align: center;
+            z-index: 1;
+            width: 90%;
+            max-width: 500px;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            box-shadow: 0 0 20px rgba(106, 27, 154, 0.5);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+        }
+
+        h1 {
+            color: var(--accent-color);
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px var(--accent-color);
+        }
+
+        p.subtitle {
+            font-size: 1.1rem;
+            color: #ddd;
+            margin-bottom: 30px;
+        }
+
+        /* 3. 입력창 및 버튼 */
+        input[type="text"] {
+            width: 80%;
+            padding: 15px;
+            font-size: 1.2rem;
+            border: 2px solid var(--primary-color);
+            border-radius: 30px;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            text-align: center;
+            margin-bottom: 20px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .magic-btn {
+            background: linear-gradient(45deg, #6a1b9a, #8e24aa);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.3rem;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-weight: bold;
+        }
+
+        .magic-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(138, 43, 226, 0.6);
+        }
+
+        .magic-btn:active {
+            transform: translateY(1px);
+        }
+
+        /* 4. 결과 화면 (카드) */
+        .result-area {
+            display: none; /* 처음엔 숨김 */
+            margin-top: 30px;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        .card {
+            background: linear-gradient(135deg, #220a36, #000);
+            border: 2px solid var(--accent-color);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.2);
+            position: relative;
+        }
+
+        .card::before {
+            content: '★';
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 30px;
+            color: var(--accent-color);
+            background: var(--bg-color);
+            padding: 0 10px;
+        }
+
+        .fortune-text {
+            font-size: 1.4rem;
+            line-height: 1.6;
+            word-break: keep-all;
+        }
+
+        .lucky-item {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: #ccc;
+            border-top: 1px dashed rgba(255,255,255,0.3);
+            padding-top: 15px;
+        }
+
+        .lucky-item span {
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+
+        .reset-btn {
+            margin-top: 20px;
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.3);
+            color: #aaa;
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+
+        .reset-btn:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        /* 로딩 애니메이션 */
+        .loader {
+            display: none;
+            font-size: 2rem;
+            color: var(--accent-color);
+            margin-top: 20px;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.5; transform: scale(0.9); }
+            50% { opacity: 1; transform: scale(1.1); text-shadow: 0 0 20px var(--accent-color); }
+            100% { opacity: 0.5; transform: scale(0.9); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="stars"></div>
+
+    <div class="container">
+        <div id="start-screen">
+            <h1>🔮 신비한 운세소</h1>
+            <p class="subtitle">당신의 이름에 숨겨진 오늘의 운명을 확인하세요.</p>
+            
+            <input type="text" id="username" placeholder="이름을 입력하세요" autocomplete="off">
+            <br>
+            <button class="magic-btn" onclick="checkFortune()">운세 보기</button>
+        </div>
+
+        <div id="loading" class="loader">
+            ✨ 별들이 속삭이는 중... ✨
+        </div>
+
+        <div id="result-screen" class="result-area">
+            <div class="card">
+                <h2 id="result-name" style="color: var(--accent-color); margin-top:0;"></h2>
+                <p id="fortune-msg" class="fortune-text"></p>
+                
+                <div class="lucky-item">
+                    행운의 아이템: <span id="lucky-item"></span><br>
+                    행운의 색상: <span id="lucky-color"></span>
+                </div>
+            </div>
+            <button class="reset-btn" onclick="reset()">다른 사람도 보기</button>
+        </div>
+    </div>
+
+    <script>
+        // 1. 운세 데이터 (여기 내용을 수정해서 사용하세요!)
+        const fortunes = [
+            "생각지도 못한 곳에서 행운이 찾아옵니다. 오늘은 복권을 사봐도 좋을지도?",
+            "오랫동안 고민하던 일이 술술 풀리는 날입니다. 자신감을 가지세요!",
+            "새로운 인연이 기다리고 있습니다. 주변을 잘 살펴보세요.",
+            "오늘은 휴식이 필요한 날입니다. 무리하지 말고 나를 위한 시간을 보내세요.",
+            "당신의 능력을 인정받을 기회가 옵니다. 적극적으로 나서보세요!",
+            "뜻밖의 재물이 들어올 운세입니다. 지갑을 열어둘 준비를 하세요.",
+            "과거의 실수가 오히려 약이 되어 돌아옵니다. 위기를 기회로!",
+            "오늘은 직감이 아주 뛰어난 날입니다. 당신의 촉을 믿으세요.",
+            "친한 친구와 사소한 다툼이 있을 수 있습니다. 먼저 웃으며 다가가세요.",
+            "달콤한 간식을 먹으면 기분이 좋아지고 일이 더 잘 풀릴 거예요."
+        ];
+
+        const items = ["오래된 동전", "붉은색 펜", "이어폰", "물티슈", "초콜릿", "거울", "텀블러"];
+        const colors = ["골드", "딥 퍼플", "네이비", "베이지", "파스텔 핑크", "민트", "블랙"];
+
+        // 2. 기능 로직
+        function checkFortune() {
+            const nameInput = document.getElementById('username');
+            const name = nameInput.value.trim();
+
+            if (!name) {
+                alert("이름을 입력해주세요!");
+                nameInput.focus();
+                return;
+            }
+
+            // 화면 전환 (입력창 숨김 -> 로딩 표시)
+            document.getElementById('start-screen').style.display = 'none';
+            document.getElementById('loading').style.display = 'block';
+
+            // 1.5초 딜레이 후 결과 보여주기 (신비감을 위해)
+            setTimeout(() => {
+                showResult(name);
+            }, 1500);
+        }
+
+        function showResult(name) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('result-screen').style.display = 'block';
+
+            // 랜덤 데이터 선택
+            const randomFortune = fortunes[Math.floor(Math.random() * fortunes.length)];
+            const randomItem = items[Math.floor(Math.random() * items.length)];
+            const randomColor = colors[Math.floor(Math.random() * colors.length)];
+
+            // 결과 텍스트 삽입
+            document.getElementById('result-name').innerText = `${name}님의 운세`;
+            document.getElementById('fortune-msg').innerText = randomFortune;
+            document.getElementById('lucky-item').innerText = randomItem;
+            document.getElementById('lucky-color').innerText = randomColor;
+        }
+
+        function reset() {
+            // 초기화
+            document.getElementById('username').value = '';
+            document.getElementById('result-screen').style.display = 'none';
+            document.getElementById('start-screen').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
