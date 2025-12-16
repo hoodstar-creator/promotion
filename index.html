@@ -213,6 +213,18 @@
             .select-card { padding: 20px; flex-direction: row; justify-content: center; gap: 15px;}
             .select-card i { margin-bottom: 0; }
         }
+
+        /* 로고 스타일 추가 */
+        .logo-area {
+            margin-bottom: 10px; /* 제목과의 간격 */
+        }
+
+        .logo-area img {
+            max-width: 150px; /* 로고 크기 조절 (숫자를 바꿔보세요) */
+            height: auto;
+            /* 로고에 흰색 빛나는 효과 주기 (선택사항) */
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5)); 
+        }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -225,6 +237,9 @@
 
     <div class="container" id="main-container">
         <div id="start-screen">
+            <div class="logo-area">
+                <img src="logo.png" alt="동아리 로고"> 
+            </div>
             <h1 class="main-title">별들의 속삭임</h1>
             <p style="color:#aaa; margin-bottom: 30px;">당신의 이름에 비친 별의 운명을 확인하세요.</p>
             
